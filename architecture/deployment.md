@@ -61,12 +61,21 @@ DAD-infra
   its workflow is path-filtered to that app (and `packages/**`).
 - **Infrastructure vs application rollout.** CDK deploys infrastructure only. DAD-Main
   ships the application itself through its own `.github/workflows/deploy.yml`
-  (push images to ECR, `migrate`, `provision-roles`, then `ecs update-service`),
+  (push images to ECR, `migrate`, `provision-roles`, then roll the services),
   resolving cluster and network ids from the stack outputs DAD-infra publishes.
+- **Deploy gate.** The api, web, and nginx task definitions have container health checks
+  (api `/health/live`, nginx `/health` on 8081, web `/`), and every service uses the ECS
+  deployment circuit breaker with rollback. `scripts/ecs-rollout.sh` starts each new
+  deployment and waits for that deployment to reach `COMPLETED`; one that ends `FAILED`
+  was rolled back and fails the job. It follows its own deployment id because a rollback
+  is a new deployment that itself reports `COMPLETED`. The api check is liveness, not the
+  database-backed readiness endpoint. Releases tagged `mobile-foundation-*` never start a
+  deploy.
 - **DAD-Quality on AWS.** The runner runs on CodeBuild with privileged Docker (Fargate
   cannot host the Docker daemon the runner needs). Evidence goes to S3 and the finding
-  ledger to DynamoDB. A deploy role limited to `codebuild:StartBuild` lets DAD-Main CI
-  start a run pinned to a SHA.
+  ledger to DynamoDB. Runs start from an EventBridge schedule; DAD-Main's CI does not
+  start them. DAD-Main's own ATM gate keeps its separate ledger, and how the two relate
+  is not decided.
 - **Verification before deploy.** The pull-request check is an offline `cdk synth` of
   both environments with no AWS credentials. The credentialed deploy jobs stay skipped
   until the per-environment deploy-role variable is set.
