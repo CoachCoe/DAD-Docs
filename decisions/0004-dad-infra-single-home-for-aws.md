@@ -52,7 +52,7 @@ different paradigm — see [../architecture/deployment.md](../architecture/deplo
 |---|---|---|---|
 | Stacks are named `dad-<name>-<env>` and publish the outputs `ClusterName` (`dad-ecs-cluster-<env>`) and `ComputeSubnetIds`, `WorkersSecurityGroupId` (`dad-network-<env>`). | DAD-infra `apps/dad-main` | DAD-Main `deploy.yml` resolves cluster, subnets, and security groups from them. | Not by CI. Neither side can re-derive the other until a stack is deployed. |
 | ECS service names and worker commands mirror `docker-compose.prod.yml` (`api`, `web`, `nginx`, and the six `*-worker` services with `worker --kind <kind>`). | DAD-Main | DAD-infra services stack; `deploy.yml` updates them by name. | Partly: DAD-infra's stack tests pin the nine services and worker commands, but against names copied from the Compose file, not read from it. |
-| Account ids, region, and OIDC trust subjects (`dev` for staging; the `production` environment and release tags for production). | DAD-infra `packages/config` and `packages/pipeline-iam` | Both apps; the DAD-Main and DAD-infra workflows that assume the roles. | DAD-infra unit tests. |
+| Account ids, region, and OIDC trust: `infra-deploy` trusts DAD-infra's GitHub Environment and `app-deploy` trusts DAD-Main's, each as an exact `repo:<repo>:environment:<env>` subject (`staging` / `production`). | DAD-infra `packages/config` and `packages/pipeline-iam` | The DAD-infra and DAD-Main workflows that assume the roles. Each repo must have matching `staging` / `production` GitHub Environments, and those environments' branch/tag rules are what limit who can deploy. | DAD-infra unit tests for the trust subjects. The environments themselves are repository settings and are not checked by CI. |
 
 ## Consequences
 
