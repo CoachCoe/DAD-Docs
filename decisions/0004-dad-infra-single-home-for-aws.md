@@ -32,15 +32,20 @@ Each app is its own CDK app with its own stack graph and its own path-filtered
 workflow, so a change to one does not synth or deploy the other.
 
 **CDK owns infrastructure only.** DAD-Main's application rollout (build and push
-images, run `migrate` then `provision-roles`, `aws ecs update-service`) stays in
-DAD-Main's `.github/workflows/deploy.yml`.
+images, pin task definitions to the image tag, run `migrate` then `provision-roles`,
+then roll the services) stays in DAD-Main's `.github/workflows/deploy.yml`. The deploy gate is the ECS rollout itself: the
+api, web, and nginx task definitions carry container health checks and every service uses
+the deployment circuit breaker with rollback, and `scripts/ecs-rollout.sh` waits for the
+deployment it started to reach `COMPLETED`. No shell into running tasks is involved.
 
 **DAD-Quality on AWS runs on CodeBuild, not Fargate.** The runner builds Docker images
 and starts a Docker Compose project, which needs a privileged Docker daemon that
 Fargate does not provide. Evidence (`run.json`, reports, traces) goes to a private S3
 bucket; the finding ledger goes to DynamoDB so findings persist and block across runs
-from ephemeral compute. A GitHub OIDC role limited to `codebuild:StartBuild` on the
-runner project lets DAD-Main's CI start a run for a specific SHA.
+from ephemeral compute. Runs are started by EventBridge Scheduler. DAD-Main's CI does
+not start them: DAD-Main already has an ATM acceptance gate with its own findings
+ledger, and how the AWS runs relate to that gate is undecided (see
+`DAD-infra/docs/design/aws-infra-design.md` §6.5).
 
 Not in DAD-infra: DAD-iOS and DAD-Android (API clients with no cloud infrastructure of
 their own) and DAD-website (a hand-managed Lightsail box with an `rsync`/cron deploy; a
@@ -52,6 +57,8 @@ different paradigm — see [../architecture/deployment.md](../architecture/deplo
 |---|---|---|---|
 | Stacks are named `dad-<name>-<env>` and publish the outputs `ClusterName` (`dad-ecs-cluster-<env>`) and `ComputeSubnetIds`, `WorkersSecurityGroupId` (`dad-network-<env>`). | DAD-infra `apps/dad-main` | DAD-Main `deploy.yml` resolves cluster, subnets, and security groups from them. | Not by CI. Neither side can re-derive the other until a stack is deployed. |
 | ECS service names and worker commands mirror `docker-compose.prod.yml` (`api`, `web`, `nginx`, and the six `*-worker` services with `worker --kind <kind>`). | DAD-Main | DAD-infra services stack; `deploy.yml` updates them by name. | Partly: DAD-infra's stack tests pin the nine services and worker commands, but against names copied from the Compose file, not read from it. |
+| Task definition families are named `dad-<service>` and `dad-maint-<task>`, and the pipeline may register new revisions of them (CDK holds a placeholder image tag). | DAD-infra `apps/dad-main` | DAD-Main `scripts/ecs-pin-image.sh`, `run-task.sh`, `ecs-rollout.sh`. | DAD-infra tests pin the service families; the IAM test pins the ECS actions the scripts call. A later `cdk deploy` that changes a task definition would point a service back at the placeholder until the next app deploy. |
+| Services declare container health checks and the deployment circuit breaker with rollback; `deploy.yml` gates on the deployment it started reaching `COMPLETED`. | DAD-infra `apps/dad-main` services stack | DAD-Main `deploy.yml` and `scripts/ecs-rollout.sh`. | DAD-infra stack tests pin the probes and the breaker; DAD-Main script tests cover the gate against a stubbed `aws`. Not exercised end to end until an account is bootstrapped. |
 | Account ids, region, and OIDC trust: `infra-deploy` trusts DAD-infra's GitHub Environment and `app-deploy` trusts DAD-Main's, each as an exact `repo:<repo>:environment:<env>` subject (`staging` / `production`). | DAD-infra `packages/config` and `packages/pipeline-iam` | The DAD-infra and DAD-Main workflows that assume the roles. Each repo must have matching `staging` / `production` GitHub Environments, and those environments' branch/tag rules are what limit who can deploy. | DAD-infra unit tests for the trust subjects. The environments themselves are repository settings and are not checked by CI. |
 
 ## Consequences

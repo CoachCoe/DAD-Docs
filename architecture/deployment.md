@@ -61,12 +61,30 @@ DAD-infra
   its workflow is path-filtered to that app (and `packages/**`).
 - **Infrastructure vs application rollout.** CDK deploys infrastructure only. DAD-Main
   ships the application itself through its own `.github/workflows/deploy.yml`
-  (push images to ECR, `migrate`, `provision-roles`, then `ecs update-service`),
-  resolving cluster and network ids from the stack outputs DAD-infra publishes.
+  (push images to ECR, pin task definitions to the image, `migrate`, `provision-roles`,
+  then roll the services), resolving cluster and network ids from the stack outputs
+  DAD-infra publishes.
+- **Task definitions are pinned per release.** CDK creates the task definitions with a
+  placeholder image tag, and an ECS service or `run-task` runs a specific revision.
+  `scripts/ecs-pin-image.sh` registers a new revision of every family with only the image
+  tag changed to the release's git SHA, and the later steps deploy those revisions. Because
+  each revision names an immutable SHA, a circuit-breaker rollback restores the previous
+  image. `migrate` and `provision-roles` are waited on and fail the deploy unless their
+  container exits 0. The nightly reconcile schedule targets the task-definition family, so
+  it runs the latest active revision.
+- **Deploy gate.** The api, web, and nginx task definitions have container health checks
+  (api `/health/live`, nginx `/health` on 8081, web `/`), and every service uses the ECS
+  deployment circuit breaker with rollback. `scripts/ecs-rollout.sh` starts each new
+  deployment and waits for that deployment to reach `COMPLETED`; one that ends `FAILED`
+  was rolled back and fails the job. It follows its own deployment id because a rollback
+  is a new deployment that itself reports `COMPLETED`. The api check is liveness, not the
+  database-backed readiness endpoint. Releases tagged `mobile-foundation-*` never start a
+  deploy.
 - **DAD-Quality on AWS.** The runner runs on CodeBuild with privileged Docker (Fargate
   cannot host the Docker daemon the runner needs). Evidence goes to S3 and the finding
-  ledger to DynamoDB. A deploy role limited to `codebuild:StartBuild` lets DAD-Main CI
-  start a run pinned to a SHA.
+  ledger to DynamoDB. Runs start from an EventBridge schedule; DAD-Main's CI does not
+  start them. DAD-Main's own ATM gate keeps its separate ledger, and how the two relate
+  is not decided.
 - **Verification before deploy.** The pull-request check is an offline `cdk synth` of
   both environments with no AWS credentials. The credentialed deploy jobs stay skipped
   until the per-environment deploy-role variable is set.
