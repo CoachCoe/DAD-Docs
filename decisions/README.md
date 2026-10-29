@@ -7,7 +7,18 @@ decision, and why.
 Repo-local decisions stay in that repo. Record here only what a developer needs to
 understand a choice that touches the seams between repos.
 
-Candidate decisions worth writing up (stubs — fill from the authoritative sources):
+Each ADR names a **cross-repo premise** — something a change relies on about code it
+does not own — along with who owns it and where it is enforced. The habit: when a
+change depends on something another repo owns, name that premise and its owner here,
+and enforce it in CI only where CI can re-derive it.
+
+## Recorded decisions
+
+- [0001 — Attribution precedence differs by platform, on purpose](0001-attribution-precedence.md)
+- [0002 — What reaches the native apps: the openapi native-admission rule](0002-openapi-native-admission.md)
+- [0003 — The mobile-foundation semver compatibility promise](0003-mobile-foundation-semver-promise.md)
+
+## Candidate decisions worth writing up (stubs — fill from the authoritative sources)
 
 - **Separate native apps** (iOS and Android as distinct repos, chosen 18 Oct 2026)
   rather than a cross-platform framework.
