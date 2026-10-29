@@ -1,0 +1,26 @@
+name: docs-check
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # Gate: internal links/references must resolve. Fails the build on broken links.
+      - name: Link + reference check
+        run: node scripts/check-links.mjs .
+      # Advisory: warn (never fail) if the contract doc lags the latest
+      # mobile-foundation tag. Reads public tags with no token.
+      - name: Version anchor (advisory)
+        run: node scripts/check-version-anchor.mjs architecture/mobile-contract.md
