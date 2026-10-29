@@ -19,6 +19,11 @@ Terms that recur across the DAD repos.
 - **impactgraph** — a versioned adapter/policy identifier set inside DAD-Quality.
   Intentionally stable across the DAD rebrand so existing policies, finding IDs, and
   retained reports stay compatible. Not renamed with the repo.
+- **DAD-infra** — the repo that owns all AWS IaC (CDK, TypeScript): `packages/config`,
+  `packages/pipeline-iam`, `apps/dad-main`, `apps/atm`. See
+  [decisions/0004](decisions/0004-dad-infra-single-home-for-aws.md).
+- **staging (infra env)** — in DAD-infra, `-c env=staging` deploys to the org's
+  *sandbox* AWS account; `production` to the production account.
 - **donor-api** — the Go API app inside DAD-Main (`apps/donor-api`).
 - **pull-based deploy** — DAD-website's model: each Lightsail box pulls from GitHub on
   a cron, so no inbound connection to the box is needed.

@@ -44,5 +44,29 @@ DAD-Main's `.github/workflows/atm.yml` invokes it in CI against a pinned SHA. Se
 
 ## DAD-infra — AWS estate
 
-DAD-infra provisions AWS (CloudFormation/CDK) for DAD-Main and DAD-Quality. The
-authoritative design is in `DAD-infra/docs/design/`.
+DAD-infra provisions AWS (CloudFormation/CDK, TypeScript) for DAD-Main and DAD-Quality,
+in `us-east-2`. Why it is one repo: [ADR 0004](../decisions/0004-dad-infra-single-home-for-aws.md).
+The authoritative design is `DAD-infra/docs/design/aws-infra-design.md`.
+
+```
+DAD-infra
+  packages/config        account map, region, -c env resolution (shared)
+  packages/pipeline-iam  the one GitHub OIDC provider per account (shared)
+  apps/dad-main          VPC · RDS + Proxy · ECS Fargate · SES · NLB
+  apps/atm               DAD-Quality runner: CodeBuild · S3 evidence · DynamoDB ledger
+```
+
+- **Environments.** `-c env=staging|production`. `staging` is the org's sandbox
+  account; `production` is the production account. Each app is a separate CDK app, and
+  its workflow is path-filtered to that app (and `packages/**`).
+- **Infrastructure vs application rollout.** CDK deploys infrastructure only. DAD-Main
+  ships the application itself through its own `.github/workflows/deploy.yml`
+  (push images to ECR, `migrate`, `provision-roles`, then `ecs update-service`),
+  resolving cluster and network ids from the stack outputs DAD-infra publishes.
+- **DAD-Quality on AWS.** The runner runs on CodeBuild with privileged Docker (Fargate
+  cannot host the Docker daemon the runner needs). Evidence goes to S3 and the finding
+  ledger to DynamoDB. A deploy role limited to `codebuild:StartBuild` lets DAD-Main CI
+  start a run pinned to a SHA.
+- **Verification before deploy.** The pull-request check is an offline `cdk synth` of
+  both environments with no AWS credentials. The credentialed deploy jobs stay skipped
+  until the per-environment deploy-role variable is set.

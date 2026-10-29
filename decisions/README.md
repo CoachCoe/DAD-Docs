@@ -17,6 +17,7 @@ and enforce it in CI only where CI can re-derive it.
 - [0001 — Attribution precedence differs by platform, on purpose](0001-attribution-precedence.md)
 - [0002 — What reaches the native apps: the openapi native-admission rule](0002-openapi-native-admission.md)
 - [0003 — The mobile-foundation semver compatibility promise](0003-mobile-foundation-semver-promise.md)
+- [0004 — DAD-infra is the single home for the AWS estate](0004-dad-infra-single-home-for-aws.md)
 
 ## Candidate decisions worth writing up (stubs — fill from the authoritative sources)
 
@@ -26,7 +27,5 @@ and enforce it in CI only where CI can re-derive it.
   See [../architecture/mobile-contract.md](../architecture/mobile-contract.md).
 - **Go rewrite** of the DAD-Main API (the architecture/operations docs in DAD-Main
   describe the current Go system).
-- **DAD-infra as the single home** for the AWS estate (DAD-Main + DAD-Quality).
-  Authoritative design: `DAD-infra/docs/design/`.
 - **Pull-based website deploy** to Lightsail (firewall-locked boxes).
   See [../architecture/deployment.md](../architecture/deployment.md).

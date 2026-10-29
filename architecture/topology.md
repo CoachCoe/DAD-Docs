@@ -57,7 +57,10 @@ provisions it (DAD-infra), or is adjacent to it (DAD-website).
   **[deployment.md](deployment.md)**.
 
 - **DAD-infra** owns the AWS estate (CloudFormation/CDK) for DAD-Main and DAD-Quality.
-  See `DAD-infra/docs/design/` for the authoritative infra design.
+  DAD-Main's `deploy.yml` rolls the application out onto the infrastructure DAD-infra
+  creates, finding it through DAD-infra's stack outputs. See
+  **[deployment.md](deployment.md)** and
+  **[ADR 0004](../decisions/0004-dad-infra-single-home-for-aws.md)**.
 
 ## DAD-Main internal layout (for orientation)
 
