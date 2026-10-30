@@ -44,7 +44,8 @@ DAD-Main's `.github/workflows/atm.yml` invokes it in CI against a pinned SHA. Se
 
 ## DAD-infra — AWS estate
 
-DAD-infra provisions AWS (CloudFormation/CDK, TypeScript) for DAD-Main and DAD-Quality,
+DAD-infra provisions AWS (CloudFormation/CDK, TypeScript) for DAD-Main (it also holds an
+undeployed DAD-Quality runner),
 in `us-east-2`. Why it is one repo: [ADR 0004](../decisions/0004-dad-infra-single-home-for-aws.md).
 The authoritative design is `DAD-infra/docs/design/aws-infra-design.md`.
 

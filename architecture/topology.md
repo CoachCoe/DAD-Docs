@@ -28,7 +28,7 @@ provisions it (DAD-infra), or is adjacent to it (DAD-website).
          │ (ATM runner) │   Docker-isolated runs, evidence, finding triage
          └──────────────┘
 
-         ┌──────────────┐  provisions AWS for DAD-Main + DAD-Quality
+         ┌──────────────┐  provisions AWS for DAD-Main            
          │  DAD-infra   │ ─────────────────────────────────────────────▶ (AWS)
          └──────────────┘
 
@@ -48,7 +48,8 @@ provisions it (DAD-infra), or is adjacent to it (DAD-website).
 - **DAD-Quality** (the local acceptance runner, formerly `atm`) checks out a pinned
   DAD-Main revision, builds it in Docker-isolated runs, and accumulates findings.
   DAD-Main's `.github/workflows/atm.yml` checks out `CoachCoe/DAD-Quality` at a
-  pinned SHA to run acceptance in CI. DAD-Quality keeps internal `atm` / `impactgraph`
+  pinned SHA to run acceptance in CI. Its findings go to DAD-Main's Worker ledger, the single
+  source of truth for findings ([ADR 0006](../decisions/0006-one-findings-ledger.md)). DAD-Quality keeps internal `atm` / `impactgraph`
   identifiers for backward-compatible evidence/finding IDs — those are intentionally
   stable and are **not** renamed with the repo.
 
@@ -56,7 +57,9 @@ provisions it (DAD-infra), or is adjacent to it (DAD-website).
   (plus a small `/api`) pull-deployed to Lightsail boxes — see
   **[deployment.md](deployment.md)**.
 
-- **DAD-infra** owns the AWS estate (CloudFormation/CDK) for DAD-Main and DAD-Quality.
+- **DAD-infra** owns the AWS estate (CloudFormation/CDK) for DAD-Main. It also holds a
+  DAD-Quality runner for AWS that is built but not deployed
+  ([ADR 0006](../decisions/0006-one-findings-ledger.md)).
   DAD-Main's `deploy.yml` rolls the application out onto the infrastructure DAD-infra
   creates, finding it through DAD-infra's stack outputs. See
   **[deployment.md](deployment.md)** and
