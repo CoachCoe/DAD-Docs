@@ -42,10 +42,10 @@ deployment it started to reach `COMPLETED`. No shell into running tasks is invol
 and starts a Docker Compose project, which needs a privileged Docker daemon that
 Fargate does not provide. Evidence (`run.json`, reports, traces) goes to a private S3
 bucket; the finding ledger goes to DynamoDB so findings persist and block across runs
-from ephemeral compute. Runs are started by EventBridge Scheduler. DAD-Main's CI does
-not start them: DAD-Main already has an ATM acceptance gate with its own findings
-ledger, and how the AWS runs relate to that gate is undecided (see
-`DAD-infra/docs/design/aws-infra-design.md` §6.5).
+from ephemeral compute. **This runner is held: built and tested, not deployed**, because
+DAD-Main's ATM gate and its Worker ledger are the single source of truth for findings
+and the runner cannot publish to that ledger. See
+[0006](0006-one-findings-ledger.md).
 
 Not in DAD-infra: DAD-iOS and DAD-Android (API clients with no cloud infrastructure of
 their own) and DAD-website (a hand-managed Lightsail box with an `rsync`/cron deploy; a

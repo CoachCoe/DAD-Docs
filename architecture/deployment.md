@@ -53,7 +53,7 @@ DAD-infra
   packages/config        account map, region, -c env resolution (shared)
   packages/pipeline-iam  the one GitHub OIDC provider per account (shared)
   apps/dad-main          VPC · RDS + Proxy · ECS Fargate · SES · NLB
-  apps/atm               DAD-Quality runner: CodeBuild · S3 evidence · DynamoDB ledger
+  apps/atm               DAD-Quality runner on AWS (held: built and tested, not deployed)
 ```
 
 - **Environments.** `-c env=staging|production`. `staging` is the org's sandbox
@@ -80,11 +80,13 @@ DAD-infra
   is a new deployment that itself reports `COMPLETED`. The api check is liveness, not the
   database-backed readiness endpoint. Releases tagged `mobile-foundation-*` never start a
   deploy.
-- **DAD-Quality on AWS.** The runner runs on CodeBuild with privileged Docker (Fargate
-  cannot host the Docker daemon the runner needs). Evidence goes to S3 and the finding
-  ledger to DynamoDB. Runs start from an EventBridge schedule; DAD-Main's CI does not
-  start them. DAD-Main's own ATM gate keeps its separate ledger, and how the two relate
-  is not decided.
+- **DAD-Quality on AWS is held.** `apps/atm` (CodeBuild with privileged Docker, S3
+  evidence) is built and tested but not deployed: ATM acceptance runs in DAD-Main's
+  GitHub gate, whose Worker ledger is the single source of truth for findings
+  ([ADR 0006](../decisions/0006-one-findings-ledger.md)).
+- **Operating rules** (one-off tasks instead of database shells, automated credential
+  rotation, one owner per piece of state, a single path to production) are
+  [ADR 0005](../decisions/0005-platform-operating-standards.md).
 - **Verification before deploy.** The pull-request check is an offline `cdk synth` of
   both environments with no AWS credentials. The credentialed deploy jobs stay skipped
   until the per-environment deploy-role variable is set.

@@ -64,7 +64,11 @@ differences:
 
 - **Bypass.** The "enforce on admins off" escape hatch is a repository-admin bypass in
   `pull_request` mode: an admin can merge a PR that cannot satisfy its checks, but
-  cannot push directly.
+  cannot push directly. Use it only for a check that **cannot run** (a deadlock), never
+  to merge past a check that failed or is still running
+  ([ADR 0005](../decisions/0005-platform-operating-standards.md)).
+- **One mechanism per repo.** A repo uses classic protection or rulesets, not both;
+  DAD-infra uses rulesets and the others classic protection.
 - **Always-running check.** The required `synth` job runs on **every** pull request
   (the workflows have no path filter on `pull_request`). A path-filtered required check
   would never report on a PR that touches other paths and would block its merge, which
