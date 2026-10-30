@@ -14,12 +14,13 @@ and enforce it in CI only where CI can re-derive it.
 
 ## Recorded decisions
 
-- [0001 — Attribution precedence differs by platform, on purpose](0001-attribution-precedence.md)
+- [0001 — Attribution precedence differs by platform, on purpose](0001-attribution-precedence.md) (superseded by 0007)
 - [0002 — What reaches the native apps: the openapi native-admission rule](0002-openapi-native-admission.md)
 - [0003 — The mobile-foundation semver compatibility promise](0003-mobile-foundation-semver-promise.md)
 - [0004 — DAD-infra is the single home for the AWS estate](0004-dad-infra-single-home-for-aws.md)
 - [0005 — Platform operating standards](0005-platform-operating-standards.md)
 - [0006 — One findings ledger; DAD-Quality on AWS is held](0006-one-findings-ledger.md)
+- [0007 — Attribution is last-touch on every client](0007-attribution-last-touch-on-all-clients.md)
 
 ## Candidate decisions worth writing up (stubs — fill from the authoritative sources)
 
