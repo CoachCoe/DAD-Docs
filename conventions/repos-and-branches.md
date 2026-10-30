@@ -19,9 +19,22 @@ Exception: **DAD-website** uses `staging` in place of `dev` (its staging box tra
 `staging`, its prod box tracks `main` — see [architecture/deployment.md](../architecture/deployment.md)).
 
 Feature work goes on a short-lived branch (`feat/…`, `chore/…`, `fix/…`), opened as a
-PR into the working branch, and the branch is pruned (local + remote) after merge.
+PR into the working branch. Every repo has **"Automatically delete head branches"** on, so
+GitHub deletes the remote branch when the PR merges; delete the local copy yourself
+(`git fetch --prune`, then `git branch -d <branch>`).
+
+**Releasing.** Promote `dev` to `main` with a PR from `dev`, merged with **"Create a merge
+commit"**, never squash or rebase. A merge commit keeps the two branches on one history, so
+the next release contains only what is new on `dev`; squashing or rebasing gives `main`
+commits that `dev` lacks, and every later release shows old changes again.
 
 ## Branch protection (solo-friendly)
+
+The working branch (`dev`, or `staging` in DAD-website) is protected **from deletion
+only**: no required checks or reviews, and force-pushes stay allowed. That is what stops
+"Automatically delete head branches" from deleting it when a release PR from `dev` merges,
+since GitHub never auto-deletes a protected branch. DAD-infra's `dev` ruleset already
+blocks deletion (see below).
 
 `main` is protected in every repo with a **solo-owner-friendly** ruleset — strong
 enough to stop accidents, loose enough that a single owner can still self-merge:
