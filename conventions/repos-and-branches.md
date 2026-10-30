@@ -48,16 +48,39 @@ deadlocks the merge):
 | DAD-Android | `contract`, `android` |
 | DAD-Quality | `checks` |
 | DAD-website | `E2E + a11y (Playwright + axe)`, `PHP unit tests` |
-| DAD-Docs | (set once CI exists; until then, protection with no required checks) |
+| DAD-Docs | `docs` |
+| DAD-infra | `synth` (on both `main` and `dev`; see below) |
 
 **DAD-Docs follows this same pattern** — `dev`/`main` branching and the solo-friendly
-`main` protection above. Until it has CI, protect `main` with the PR + force-push/
-deletion rules and no required-check contexts; add contexts when a docs-lint or
-link-check job exists.
+`main` protection above, with its `docs` link-check job as the required check.
+
+### DAD-infra differences
+
+DAD-infra applies the same policy with two repository **rulesets** (`protect-main`,
+`protect-dev`) rather than classic branch protection, so the rules cover **both**
+long-lived branches. The settings match the table above (PR required, 0 approvals,
+conversation resolution, up-to-date branch, no force-push, no deletion), with two
+differences:
+
+- **Bypass.** The "enforce on admins off" escape hatch is a repository-admin bypass in
+  `pull_request` mode: an admin can merge a PR that cannot satisfy its checks, but
+  cannot push directly. Use it only for a check that **cannot run** (a deadlock), never
+  to merge past a check that failed or is still running
+  ([ADR 0005](../decisions/0005-platform-operating-standards.md)).
+- **One mechanism per repo.** A repo uses classic protection or rulesets, not both;
+  DAD-infra uses rulesets and the others classic protection.
+- **Always-running check.** The required `synth` job runs on **every** pull request
+  (the workflows have no path filter on `pull_request`). A path-filtered required check
+  would never report on a PR that touches other paths and would block its merge, which
+  is the same rule as "name only checks that always run" above. Deploy triggers stay
+  path-filtered.
+
+The exact ruleset is recorded in `DAD-infra/docs/branch-protection.md`.
 
 ### Applying protection
 
-Protection is set via the GitHub API, e.g.:
+Protection is set via the GitHub API (DAD-infra uses the rulesets API instead; see
+above), e.g.:
 
 ```sh
 gh api -X PUT repos/CoachCoe/<repo>/branches/main/protection \
