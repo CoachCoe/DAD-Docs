@@ -16,22 +16,23 @@ action.
 A **minor-versioned snapshot** of DAD-Main's canonical OpenAPI, scoped to an
 operation allow-list and shipped as a tagged release of DAD-Main:
 
-- Tag form: `mobile-foundation-vX.Y.Z` (e.g. `mobile-foundation-v2.2.0`).
-- Produced from `DAD-Main/contracts/` (`version.json` + the bundle tooling).
+- Tag form: `mobile-foundation-vX.Y.Z` (e.g. `mobile-foundation-v2.3.0`).
+- Produced by `DAD-Main/scripts/mobile-foundation.mjs`; the version is declared in
+  `DAD-Main/contracts/mobile/version.json`.
 - Each tag pins a specific DAD-Main source commit; both apps vendor it **by hash**.
 
 ## How the apps pin it
 
 Each app commits a `foundation.lock.json` that pins the exact snapshot. As of this
-writing both apps are on the same triple:
+writing the current release is `2.3.0`, and the apps vendor it as this triple:
 
 ```json
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "source_repository": "CoachCoe/DAD-Main",
-  "source_revision": "f400b35fa4336028922158ff813c183a3925364a",
-  "release_tag": "mobile-foundation-v2.2.0",
-  "manifest_sha256": "cb0ded5fdec51a977083c6796d9a8ff0fee9618f4ab44879a9d0d0a6d92ae943"
+  "source_revision": "ac83b73a94eeb4ce4f7b38168b948559944bdcdd",
+  "release_tag": "mobile-foundation-v2.3.0",
+  "manifest_sha256": "2767a0db3a5c2944bde8084bae2daba7551b37ffdb23b17a236e96204a46e302"
 }
 ```
 
@@ -43,7 +44,7 @@ the apps physically refuse to silently drift.
 
 ## Semver = the compatibility promise
 
-- **MINOR bump** (e.g. 2.1 → 2.2): purely additive. An old app still builds; it just
+- **MINOR bump** (e.g. 2.2 → 2.3): purely additive. An old app still builds; it just
   does not see the new operations until it re-vendors. **Safe to defer per app.**
 - **MAJOR bump** (e.g. 1.x → 2.0): breaking. Both apps must re-vendor and fix fallout
   before they can adopt — but they still do not *break* in the meantime, because they
@@ -51,6 +52,11 @@ the apps physically refuse to silently drift.
 
 Nothing in an app breaks when DAD-Main ships a new contract. The apps only change
 when a human re-vendors. The wall is a feature, not friction.
+
+Release 2.3.0 is additive over 2.2.0: `partnerOverview.user_id` (the signed-in partner
+user's id, which lets a client avoid self-removal) and `DonorDashboard.rankings_opted_out`
+(distinguishes opted out from not yet ranked). An app that is still pinned to an earlier
+release keeps building and does not see these fields until it re-vendors.
 
 ## Re-vendoring an app (the per-phase chore)
 
@@ -79,12 +85,13 @@ up to date; warns once a newer tag is cut, until the app re-vendors.
 - Swift/Kotlin generators choke on `anyOf` + `type: null` and enforce
   `additionalProperties: false` — handled with per-app type overrides
   (iOS type overrides; Android's `LogoutAcknowledgement` pattern).
-- The `check-foundation` tests historically **hardcode the expected version string**.
-  When re-vendoring, update that pin in each app's `check-foundation` test too, or the
-  contract CI leg fails on the version assertion.
+- Each app's `scripts/check-foundation.test.mjs` **hardcodes the expected version
+  string**. When re-vendoring, update that pin too, or the contract CI leg fails on the
+  version assertion.
 
 ## Authoritative sources
 
-- `DAD-Main/contracts/` — bundle source + `version.json`.
+- `DAD-Main/scripts/mobile-foundation.mjs` and `DAD-Main/contracts/mobile/version.json` —
+  bundle tooling and declared version.
 - `DAD-iOS/foundation.lock.json`, `DAD-Android/foundation.lock.json` — the pins.
 - Each app's `scripts/check-foundation*` — the offline verifier.

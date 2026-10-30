@@ -1,7 +1,9 @@
 # 0001 — Attribution precedence differs by platform, on purpose
 
-- Status: accepted
+- Status: superseded by [0007](0007-attribution-last-touch-on-all-clients.md)
 - Date: 2026-10-29
+- Note: kept as history. The divergence described below is not allowed; attribution is
+  last-touch on every client.
 - Scope: DAD-iOS, DAD-Android (and the DAD-Main conversion counter they feed)
 
 ## Context
@@ -19,7 +21,7 @@ This looks like an inconsistency. It is not.
 
 ## Decision
 
-**Android's last-touch-wins is the canonical rule, per PRD R-3 ("last-touch wins"),
+**Android's last-touch-wins is the canonical rule, per PRD R-4 ("last-touch wins"),
 and it matches how the DAD-Main server counts conversion (on last touch).** iOS's
 first-writer-wins is a deliberate, documented divergence recorded in that file's own
 comment — not a bug to reconcile by mirroring one platform onto the other.
@@ -31,7 +33,7 @@ refactor.
 
 ## Who owns this premise
 
-- Canonical rule: **PRD R-3** (DAD-Main product requirements).
+- Canonical rule: **PRD R-4** (DAD-Main product requirements).
 - Enforced in: each app's `Attribution` source + its unit tests (`AttributionTest`).
 - Server side of the premise: DAD-Main counts conversion on last touch.
 
@@ -39,5 +41,5 @@ refactor.
 
 This exact premise has already caused a near-miss: the instinct on seeing the two
 implementations is to unify them. Naming it as a cross-repo decision — with the owner
-(PRD R-3) and the enforcement points — stops a future change from silently "correcting"
+(PRD R-4) and the enforcement points — stops a future change from silently "correcting"
 a deliberate design choice.
