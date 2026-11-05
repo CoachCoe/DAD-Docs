@@ -127,7 +127,7 @@ Which runner a job uses is decided per repo, and the reason is recorded next to 
 
 One Apple Silicon Mac can serve both self-hosted labels: label matching is
 case-insensitive, so the runner's `macOS` label satisfies `macos`, and `linux` is added at
-registration. Runners are registered per repository (`CoachCoe` is a user account).
+registration. Runners are registered per repository (`pre-dad` is the GitHub org that owns the repos).
 Prerequisites and registration steps are in each repo's `.github/SELF_HOSTED_RUNNERS.md`
 (DAD-iOS, DAD-Android, DAD-Quality). A job waits in the queue while its self-hosted runner
 is offline.

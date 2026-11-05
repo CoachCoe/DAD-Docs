@@ -29,7 +29,7 @@ writing the current release is `2.11.0`, and the apps vendor it as this triple:
 ```json
 {
   "version": "2.11.0",
-  "source_repository": "CoachCoe/DAD-Main",
+  "source_repository": "pre-dad/DAD-Main",
   "source_revision": "2047d6a4f2d3cc8297e6c102fc8f7a30e45143ee",
   "release_tag": "mobile-foundation-v2.11.0",
   "manifest_sha256": "cffb02430a6f366c5e718af54d6ef1e1e64c488fcfb1dab5063c26e84ca55730"

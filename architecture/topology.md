@@ -47,7 +47,7 @@ provisions it (DAD-infra), or is adjacent to it (DAD-website).
 
 - **DAD-Quality** (the local acceptance runner, formerly `atm`) checks out a pinned
   DAD-Main revision, builds it in Docker-isolated runs, and accumulates findings.
-  DAD-Main's `.github/workflows/atm.yml` checks out `CoachCoe/DAD-Quality` at a
+  DAD-Main's `.github/workflows/atm.yml` checks out `pre-dad/DAD-Quality` at a
   pinned SHA to run acceptance in CI. Its findings go to DAD-Main's Worker ledger, the single
   source of truth for findings ([ADR 0006](../decisions/0006-one-findings-ledger.md)). DAD-Quality keeps internal `atm` / `impactgraph`
   identifiers for backward-compatible evidence/finding IDs — those are intentionally
