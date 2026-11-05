@@ -15,7 +15,7 @@ import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 
 const DOC = process.argv[2] ?? "architecture/mobile-contract.md";
-const REMOTE = "https://github.com/CoachCoe/DAD-Main.git";
+const REMOTE = "https://github.com/pre-dad/DAD-Main.git";
 
 function latestTag() {
   try {

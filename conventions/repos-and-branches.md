@@ -96,7 +96,7 @@ Protection is set via the GitHub API (DAD-infra uses the rulesets API instead; s
 above), e.g.:
 
 ```sh
-gh api -X PUT repos/CoachCoe/<repo>/branches/main/protection \
+gh api -X PUT repos/pre-dad/<repo>/branches/main/protection \
   -H "Accept: application/vnd.github+json" --input - <<'JSON'
 {
   "required_status_checks": { "strict": true, "contexts": ["<check>", "..."] },

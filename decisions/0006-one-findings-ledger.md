@@ -13,7 +13,7 @@ says which findings exist and how they were triaged.
 DAD-Main already has that place. Its ATM acceptance gate (`.github/workflows/atm.yml`)
 publishes to a Cloudflare Worker ledger (`apps/atm-ledger`, documented in DAD-Main
 `docs/atm-ledger.md`): an append-only, hash-chained record with an archived copy. The
-Worker accepts only GitHub's signed OIDC tokens from `CoachCoe/DAD-Main` on
+Worker accepts only GitHub's signed OIDC tokens from `pre-dad/DAD-Main` on
 GitHub-hosted runners, checks the workflow path and job environment, and binds every
 receipt to a GitHub Actions run (`run_id:run_attempt`) and its evidence artifact.
 
@@ -37,7 +37,7 @@ GitHub run or artifact, so it cannot publish to the Worker ledger.
 
 | Premise | Owner | Consumer | Enforced |
 |---|---|---|---|
-| A ledger receipt is bound to a GitHub Actions run on a GitHub-hosted runner in `CoachCoe/DAD-Main`. | DAD-Main `apps/atm-ledger` | DAD-Main `atm.yml`; any future AWS integration. | The Worker's token and receipt validation, with its tests. |
+| A ledger receipt is bound to a GitHub Actions run on a GitHub-hosted runner in `pre-dad/DAD-Main`. | DAD-Main `apps/atm-ledger` | DAD-Main `atm.yml`; any future AWS integration. | The Worker's token and receipt validation, with its tests. |
 
 ## Consequences
 
