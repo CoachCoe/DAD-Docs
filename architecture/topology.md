@@ -28,7 +28,7 @@ provisions it (DAD-infra), or is adjacent to it (DAD-website).
          │ (ATM runner) │   Docker-isolated runs, evidence, finding triage
          └──────────────┘
 
-         ┌──────────────┐  provisions AWS for DAD-Main            
+         ┌──────────────┐  provisions AWS for DAD-Main
          │  DAD-infra   │ ─────────────────────────────────────────────▶ (AWS)
          └──────────────┘
 
