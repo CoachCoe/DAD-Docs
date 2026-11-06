@@ -112,22 +112,16 @@ the secret value only; restart the service, no template redeploy. Authoritative 
 
 ## CI runners
 
-Which runner a job uses is decided per repo, and the reason is recorded next to the job.
+Every job runs on a GitHub-hosted runner; there are no self-hosted runners. The repos are
+public under the `pre-dad` org, so standard hosted runners cost nothing.
 
 | Repo | Job | Runner | Why |
 |---|---|---|---|
-| DAD-Main | `changes`, `ledger`, `api`, `web`, `deploy`, `browser`; the ATM, deploy and cloudflare-ranges workflows; mobile-foundation `contract` and `publish` | GitHub-hosted `ubuntu-24.04` | Ephemeral environments, including for fork PRs. `browser` needs a Postgres service container and `playwright install --with-deps`, both Linux-hosted-runner features. |
-| DAD-Main | mobile-foundation `swift-compatibility` | GitHub-hosted `macos-latest` | Compiles the bundle's Swift contract with Apple tooling. |
-| DAD-iOS | `contract` | self-hosted `[self-hosted, dad, linux]` | Node foundation checks. |
-| DAD-iOS | `ios` | self-hosted `[self-hosted, dad, macos]` | Xcode, Swift and the simulator via `scripts/check-ios.sh`. |
-| DAD-Android | `contract` | self-hosted `[self-hosted, dad, linux]` | Node foundation checks. |
-| DAD-Android | `android` | GitHub-hosted `ubuntu-24.04` | Boots an x86_64 emulator that needs Linux KVM, which the self-hosted Apple Silicon Mac cannot provide. |
-| DAD-Quality | `checks` | self-hosted `[self-hosted, dad, linux]` | Node checks with Docker-isolated fixtures. |
-| DAD-infra | all CDK jobs | GitHub-hosted `ubuntu-24.04` | Offline `cdk synth`; the credentialed jobs assume an OIDC deploy role. |
-
-One Apple Silicon Mac can serve both self-hosted labels: label matching is
-case-insensitive, so the runner's `macOS` label satisfies `macos`, and `linux` is added at
-registration. Runners are registered per repository (`pre-dad` is the GitHub org that owns the repos).
-Prerequisites and registration steps are in each repo's `.github/SELF_HOSTED_RUNNERS.md`
-(DAD-iOS, DAD-Android, DAD-Quality). A job waits in the queue while its self-hosted runner
-is offline.
+| DAD-Main | `changes`, `ledger`, `api`, `web`, `deploy`, `browser`; the ATM, deploy and cloudflare-ranges workflows; mobile-foundation `contract` and `publish` | `ubuntu-24.04` | `browser` needs a Postgres service container and `playwright install --with-deps`. |
+| DAD-Main | mobile-foundation `swift-compatibility` | `macos-latest` | Compiles the bundle's Swift contract with Apple tooling. |
+| DAD-iOS | `contract`, `secret-scan` | `ubuntu-24.04` | Node foundation checks; gitleaks over full history. |
+| DAD-iOS | `ios` | `xcode-27` | Xcode, Swift and the simulator via `scripts/check-ios.sh`; needs Xcode 27, which `macos-latest` does not ship. Runs cold, about 47 minutes. |
+| DAD-Android | `contract`, `android` | `ubuntu-24.04` | Node foundation checks; `android` boots an x86_64 emulator that needs Linux KVM. |
+| DAD-Quality | `checks` | `ubuntu-24.04` | Node checks with Docker-isolated fixtures and Playwright. |
+| DAD-website | `checks`, `php-tests`, `e2e` | `ubuntu-24.04` | PHP 8.3, Composer and shellcheck come with the image; Playwright + axe for E2E. |
+| DAD-infra | all CDK jobs | `ubuntu-24.04` | Offline `cdk synth`; the credentialed jobs assume an OIDC deploy role. |
