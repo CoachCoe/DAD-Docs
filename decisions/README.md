@@ -21,13 +21,11 @@ and enforce it in CI only where CI can re-derive it.
 - [0005 — Platform operating standards](0005-platform-operating-standards.md)
 - [0006 — One findings ledger; DAD-Quality on AWS is held](0006-one-findings-ledger.md)
 - [0007 — Attribution is last-touch on every client](0007-attribution-last-touch-on-all-clients.md)
+- [0008 — CI runs on GitHub-hosted runners only](0008-github-hosted-runners-only.md)
+- [0009 — Separate native apps, not a shared cross-platform code base](0009-separate-native-apps.md)
 
 ## Candidate decisions worth writing up (stubs — fill from the authoritative sources)
 
-- **Separate native apps** (iOS and Android as distinct repos, chosen 18 Oct 2026)
-  rather than a cross-platform framework.
-- **Hash-locked contract vendoring** instead of the apps tracking DAD-Main's `dev`.
-  See [../architecture/mobile-contract.md](../architecture/mobile-contract.md).
 - **Go rewrite** of the DAD-Main API (the architecture/operations docs in DAD-Main
   describe the current Go system).
 - **Pull-based website deploy** to Lightsail (firewall-locked boxes).
