@@ -2,7 +2,8 @@
 
 How non-API repos reach their targets. (DAD-Main and the native apps are not
 covered here — the apps ship through the App Store / Play Console per their own
-release checklists; DAD-Main's deploy lives in `DAD-Main/deploy/` and DAD-infra.)
+release checklists; DAD-Main's application rollout is `DAD-Main/.github/workflows/deploy.yml`
+onto the estate DAD-infra provisions, described below.)
 
 ## DAD-website — pull-based deploy to Lightsail
 
@@ -125,3 +126,6 @@ public under the `pre-dad` org, so standard hosted runners cost nothing.
 | DAD-Quality | `checks` | `ubuntu-24.04` | Node checks with Docker-isolated fixtures and Playwright. |
 | DAD-website | `checks`, `php-tests`, `e2e` | `ubuntu-24.04` | PHP 8.3, Composer and shellcheck come with the image; Playwright + axe for E2E. |
 | DAD-infra | all CDK jobs | `ubuntu-24.04` | Offline `cdk synth`; the credentialed jobs assume an OIDC deploy role. |
+| DAD-Docs | `docs` | `ubuntu-24.04` | Node link check. |
+
+The choice is recorded in [ADR 0008](../decisions/0008-github-hosted-runners-only.md).

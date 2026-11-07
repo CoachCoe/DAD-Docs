@@ -1,6 +1,6 @@
 # DAD documentation
 
-System-level documentation for the **DAD** (Dynamic Aid) platform: how the
+System-level documentation for the **DAD** (Dynamic Aid Delivery) platform: how the
 repositories fit together, the cross-repo contracts that bind them, and the
 conventions every repo follows. This repo describes the **seams between repos** —
 anything local to one repo (how to build or test it) stays in that repo's own
@@ -24,7 +24,9 @@ New to the codebase? Read in this order:
    branch strategy, and branch protection.
 4. **[architecture/deployment.md](architecture/deployment.md)** — how the website and
    the quality runner reach their targets.
-5. **[glossary.md](glossary.md)** — terms you will hit immediately (ATM, mobile-foundation,
+5. **[operations/runbooks.md](operations/runbooks.md)** — where the incident, backup and
+   restore, key-rotation, bootstrap and rollback procedures live, and who owns each.
+6. **[glossary.md](glossary.md)** — terms you will hit immediately (ATM, mobile-foundation,
    impactgraph, …).
 
 ## The repositories
@@ -38,6 +40,7 @@ New to the codebase? Read in this order:
 | **DAD-website** | Marketing/informational site, pull-deployed to Lightsail. | `DAD-website/README.md` |
 | **DAD-infra** | AWS IaC for the estate (CloudFormation/CDK). | `DAD-infra/README.md` |
 | **DAD-Docs** | This repo. Cross-repo system documentation. | — |
+| **DAD-ImpactGraph** | Empty repository with no commits. Nothing in R1 depends on it. The `impactgraph` identifier in DAD-Quality is unrelated to it. | — |
 
 ## What does NOT go here
 

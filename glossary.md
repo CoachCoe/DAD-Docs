@@ -2,7 +2,7 @@
 
 Terms that recur across the DAD repos.
 
-- **DAD** — Dynamic Aid. The platform. Public site is `dynamicaid.org`.
+- **DAD** — Dynamic Aid Delivery. The platform. Public site is `dynamicaid.org`.
 - **DAD-Main** — the product monorepo: Go donor API, Next.js web app, and the
   canonical OpenAPI contract. Source of truth for the API.
 - **mobile-foundation** — a minor-versioned, hash-locked snapshot of DAD-Main's
@@ -24,6 +24,8 @@ Terms that recur across the DAD repos.
   [decisions/0004](decisions/0004-dad-infra-single-home-for-aws.md).
 - **staging (infra env)** — in DAD-infra, `-c env=staging` deploys to the org's
   *sandbox* AWS account; `production` to the production account.
+- **ATM ledger** — the Cloudflare Worker in `DAD-Main/apps/atm-ledger`: the append-only,
+  hash-chained record of ATM findings. See [decisions/0006](decisions/0006-one-findings-ledger.md).
 - **donor-api** — the Go API app inside DAD-Main (`apps/donor-api`).
 - **pull-based deploy** — DAD-website's model: each Lightsail box pulls from GitHub on
   a cron, so no inbound connection to the box is needed.

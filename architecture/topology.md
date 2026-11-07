@@ -73,8 +73,12 @@ DAD-Main is a monorepo of three apps plus the contract:
 DAD-Main/
   apps/donor-api/    # Go API (source of truth for the OpenAPI contract)
   apps/web/          # Next.js web app (consumes the contract in-repo)
-  apps/atm-ledger/   # ledger component
+  apps/atm-ledger/   # Cloudflare Worker: the ATM findings ledger (ADR 0006)
   contracts/         # mobile-foundation bundle source + version.json
+  deploy/nginx/      # edge image: ingress, TLS and Cloudflare origin config
+  scripts/           # bundle tooling, ECS rollout and one-off task scripts
+  infra/             # pointer to DAD-infra; no code
+  docs/              # architecture, operations, security, product contract
 ```
 
 Repo-local build/test commands for each live in `DAD-Main/README.md` — not here.
