@@ -16,8 +16,8 @@ node scripts/check-links.mjs .
 node scripts/check-version-anchor.mjs architecture/mobile-contract.md   # advisory, never fails
 ```
 
-The link check fails on a relative link to a path that does not exist. It does not fetch
-external URLs or check `#anchors`, and it cannot verify prose against code.
+The link check fails on a relative link to a path or `#heading` that does not exist. It does not fetch
+external URLs, and it cannot verify prose against code.
 
 ## Branch and push discipline
 
@@ -39,7 +39,7 @@ external URLs or check `#anchors`, and it cannot verify prose against code.
   `.gitignore` here, so `git add -A` would stage them: stage files by name. Keep them
   outside the tree or in the owning issue/PR.
 - **ADRs are one file per decision**, `decisions/NNNN-slug.md` (next free number, currently
-  0008), headed `# NNNN — Title` with `Status`, `Date`, `Scope` lines, then Context and
+  0010), headed `# NNNN — Title` with `Status`, `Date`, `Scope` lines, then Context and
   Decision. Add each new one to the "Recorded decisions" list in `decisions/README.md`.
 - **Change a decision by superseding it**, as 0007 does for 0001: new ADR with
   `Supersedes:`, old one marked `Status: superseded by …` and kept as history.

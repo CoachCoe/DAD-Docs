@@ -8,8 +8,10 @@
 //
 // Scope:
 //   - Relative links/images to other files in this repo must resolve on disk.
-//   - In-page anchors (#heading) and external URLs (http/https/mailto) are not
-//     fetched here; external link liveness is out of scope by design.
+//   - #fragments on links to Markdown files must match a heading in the target
+//     (GitHub slug rules).
+//   - External URLs (http/https/mailto) are not fetched; external link liveness
+//     is out of scope by design.
 
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, dirname, resolve, extname } from "node:path";
@@ -28,6 +30,34 @@ function walk(dir) {
   return out;
 }
 
+const slug = (heading) =>
+  heading
+    .toLowerCase()
+    .replace(/`/g, "")
+    .replace(/[^\p{L}\p{N} _-]/gu, "")
+    .trim()
+    .replace(/ /g, "-");
+
+const anchors = new Map();
+function anchorsOf(file) {
+  if (!anchors.has(file)) {
+    const seen = new Map();
+    const set = new Set();
+    let fenced = false;
+    for (const line of readFileSync(file, "utf8").split("\n")) {
+      if (line.startsWith("```")) fenced = !fenced;
+      const m = !fenced && line.match(/^#{1,6}\s+(.*?)\s*#*$/);
+      if (!m) continue;
+      const base = slug(m[1]);
+      const n = seen.get(base) ?? 0;
+      seen.set(base, n + 1);
+      set.add(n === 0 ? base : `${base}-${n}`);
+    }
+    anchors.set(file, set);
+  }
+  return anchors.get(file);
+}
+
 // [text](target) -- capture the target, ignoring any "title" after a space.
 const LINK = /\[[^\]]*\]\(\s*([^)\s]+)(?:\s+"[^"]*")?\s*\)/g;
 
@@ -39,13 +69,14 @@ for (const file of walk(ROOT)) {
   for (const m of src.matchAll(LINK)) {
     const target = m[1];
     // Skip external schemes and pure in-page anchors.
-    if (/^(https?:|mailto:|tel:)/.test(target) || target.startsWith("#")) continue;
+    if (/^(https?:|mailto:|tel:)/.test(target)) continue;
     checked++;
-    // Strip any #fragment; resolve the file part relative to the doc.
-    const filePart = target.split("#")[0];
-    if (filePart === "") continue; // was a pure "#frag" already handled
-    const resolved = resolve(dirname(file), filePart);
-    if (!existsSync(resolved)) {
+    const [filePart, fragment] = target.split("#");
+    const resolved = filePart === "" ? file : resolve(dirname(file), filePart);
+    const missingFile = !existsSync(resolved);
+    const missingAnchor =
+      !missingFile && fragment && extname(resolved) === ".md" && !anchorsOf(resolved).has(fragment);
+    if (missingFile || missingAnchor) {
       console.error(`BROKEN  ${file}\n        -> ${target}`);
       broken++;
     }
